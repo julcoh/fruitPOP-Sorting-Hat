@@ -1,12 +1,12 @@
-# 📊 FruitPOP Volunteer Shift Optimizer
+# 📊 fruitPOP Sorting Hat
 
 > **Optimize volunteer shift assignments and analyze outcomes with Monte Carlo simulations — all in an easy-to-use web app.**
 
 ---
 
-## 🚀 What is FruitPOP?
+## 🚀 What is this Sorting Hat app?
 
-FruitPOP helps volunteer coordinators **assign people to shifts** in the most efficient way possible, based on:
+The sorting hat helps volunteer coordinators **assign people to shifts** in the most efficient way possible, based on:
 
 - **Volunteer preferences** (what shifts they want most)
 - **Shift capacities** (how many people each shift can accept)
