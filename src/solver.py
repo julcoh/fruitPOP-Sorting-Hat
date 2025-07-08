@@ -12,10 +12,11 @@ def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
     SCALE = 10
     points_d = dict(zip(shifts_df['ShiftID'].astype(str), shifts_df['Points']))
 
-    def get_rank(v, s, prefs_input):
+    def get_rank(v, s):
+        s_str = str(s)
         if isinstance(prefs_input, pd.DataFrame):
-            if (v in prefs_input.index) and (s in prefs_input.columns):
-                val = prefs_input.at[v, s]
+            if (v in prefs_input.index) and (s_str in prefs_input.columns):
+                val = prefs_input.at[v, s_str]
                 if pd.isna(val):
                     return float('inf')
                 try:
