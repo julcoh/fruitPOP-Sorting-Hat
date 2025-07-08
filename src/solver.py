@@ -5,27 +5,28 @@ import numpy as np
 import random
 import pandas as pd
 
+def get_rank(v, s, prefs_input):
+    s_str = str(s)
+    if isinstance(prefs_input, pd.DataFrame):
+        if (v in prefs_input.index) and (s_str in prefs_input.columns):
+            val = prefs_input.at[v, s_str]
+            if pd.isna(val):
+                return float('inf')
+            try:
+                return int(val)
+            except (ValueError, TypeError):
+                return float('inf')
+        else:
+            return float('inf')
+    return float('inf')
+
+
 def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
                      vol_min_points, min_points, max_over, seed,
                      overlapping_pairs=[], sequential_pairs=[]):
     rand = random.Random(seed)
     SCALE = 10
     points_d = dict(zip(shifts_df['ShiftID'].astype(str), shifts_df['Points']))
-
-    def get_rank(v, s):
-        s_str = str(s)
-        if isinstance(prefs_input, pd.DataFrame):
-            if (v in prefs_input.index) and (s_str in prefs_input.columns):
-                val = prefs_input.at[v, s_str]
-                if pd.isna(val):
-                    return float('inf')
-                try:
-                    return int(val)
-                except (ValueError, TypeError):
-                    return float('inf')
-            else:
-                return float('inf')
-        return float('inf')
 
     m2 = cp_model.CpModel()
     x = {(v, s): m2.NewBoolVar(f'x_{v}_{s}') for v in volunteers for s in shift_ids}
@@ -43,7 +44,7 @@ def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
         m2.Add(total_pts >= min_pts_v_scaled)
         m2.Add(total_pts <= min_pts_v_scaled + max_over_scaled)
 
-        eligible = [x[v, s] for s in shift_ids if get_rank(v, s) <= 5]
+        eligible = [x[v, s] for s in shift_ids if get_rank(v, s, prefs_input) <= 5]
         m2.Add(sum(eligible) >= 1)
 
         for s1, s2 in overlapping_pairs:
@@ -61,7 +62,7 @@ def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
     obj_terms = []
     for v in volunteers:
         for s in shift_ids:
-            rank = get_rank(v, s)
+            rank = get_rank(v, s, prefs_input)
             if rank == float('inf'):
                 continue
             weight = {1:300, 2:200, 3:100}.get(rank, 50)
