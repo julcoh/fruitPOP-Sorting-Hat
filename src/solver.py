@@ -34,7 +34,11 @@ def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
     points_d_scaled = {s: int(round(float(points_d[s]) * SCALE)) for s in shift_ids}
 
     for s in shift_ids:
-        cap = int(shifts_df.loc[shifts_df['ShiftID'].astype(str) == s, 'Capacity'].values[0])
+        match = shifts_df.loc[shifts_df['ShiftID'].astype(str) == s, 'Capacity']
+        if not match.empty:
+            cap = int(match.values[0])
+        else:
+            cap = 0
         m2.Add(sum(x[v, s] for v in volunteers) <= cap)
 
     for v in volunteers:
