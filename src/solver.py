@@ -20,7 +20,6 @@ def get_rank(v, s, prefs_input):
             return float('inf')
     return float('inf')
 
-
 def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
                      vol_min_points, min_points, max_over, seed,
                      overlapping_pairs=[], sequential_pairs=[]):
@@ -34,12 +33,12 @@ def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
     points_d_scaled = {s: int(round(float(points_d[s]) * SCALE)) for s in shift_ids}
 
     for s in shift_ids:
-        match = shifts_df.loc[shifts_df['ShiftID'].astype(str) == s, 'Capacity']
+        match = shifts_df.loc[shifts_df['ShiftID'] == s, 'Capacity']
         if not match.empty:
             cap = int(match.values[0])
         else:
             cap = 0
-        m2.Add(sum(x[v, s] for v in volunteers) <= cap)
+    m2.Add(sum(x[v, s] for v in volunteers) <= cap)
 
     for v in volunteers:
         min_pts_v_scaled = int(np.floor(vol_min_points[v] * SCALE))

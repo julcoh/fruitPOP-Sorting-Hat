@@ -16,6 +16,14 @@ uploaded_shifts = st.file_uploader("Upload Shifts CSV", type="csv")
 uploaded_prefs = st.file_uploader("Upload Preferences CSV", type="csv")
 uploaded_settings = st.file_uploader("Upload Settings CSV", type="csv")
 
+def clean_shift_id(val):
+    if pd.isna(val):
+        return ""
+    s = str(val).strip()
+    if s.endswith(".0"):
+        s = s[:-2]
+    return s
+
 if uploaded_shifts and uploaded_prefs and uploaded_settings:
     # Load data
     shifts = pd.read_csv(uploaded_shifts)
@@ -84,7 +92,15 @@ if uploaded_shifts and uploaded_prefs and uploaded_settings:
                     s2 = shift_ids_sorted[k + 1]
                     sequential_pairs.append((s1, s2))
 
-        shift_ids = shifts['ShiftID'].astype(str).tolist()
+        # Clean ShiftIDs in shifts
+        shifts["ShiftID"] = shifts["ShiftID"].apply(clean_shift_id)
+
+        # Also clean columns in prefs
+        prefs.columns = [clean_shift_id(c) for c in prefs.columns]
+
+        # Now safely build shift_ids list
+        shift_ids = shifts['ShiftID'].tolist()
+        
         volunteers = prefs.index.tolist()
 
         status_name, assignments, solver2, x, status2, best_cut = run_shift_solver(
