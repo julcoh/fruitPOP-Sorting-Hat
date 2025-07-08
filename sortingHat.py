@@ -35,6 +35,8 @@ if uploaded_shifts and uploaded_prefs and uploaded_settings:
         shifts["StartTime"] = pd.to_datetime(shifts["StartTime"])
         shifts["EndTime"] = pd.to_datetime(shifts["EndTime"])
 
+    st.write("DEBUG - Raw Capacity column values:", shifts["Capacity"].unique())
+
     # Process preferences
     volunteer_names = prefs_raw.iloc[:, 0].astype(str).tolist()
     if 'MinPoints' in prefs_raw.columns:
@@ -100,7 +102,7 @@ if uploaded_shifts and uploaded_prefs and uploaded_settings:
 
         # Now safely build shift_ids list
         shift_ids = shifts['ShiftID'].tolist()
-        
+
         volunteers = prefs.index.tolist()
 
         status_name, assignments, solver2, x, status2, best_cut = run_shift_solver(
