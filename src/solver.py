@@ -3,6 +3,7 @@
 from ortools.sat.python import cp_model
 import numpy as np
 import random
+import pandas as pd
 
 def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
                      vol_min_points, min_points, max_over, seed,
