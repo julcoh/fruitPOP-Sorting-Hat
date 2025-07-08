@@ -35,10 +35,14 @@ def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
     for s in shift_ids:
         match = shifts_df.loc[shifts_df['ShiftID'] == s, 'Capacity']
         if not match.empty:
-            cap = int(match.values[0])
+            cap_val = match.values[0]
+            if pd.isna(cap_val) or np.isinf(cap_val):
+                cap = 0
+            else:
+                cap = int(cap_val)
         else:
             cap = 0
-    m2.Add(sum(x[v, s] for v in volunteers) <= cap)
+        m2.Add(sum(x[v, s] for v in volunteers) <= cap)
 
     for v in volunteers:
         min_pts_v_scaled = int(np.floor(vol_min_points[v] * SCALE))
