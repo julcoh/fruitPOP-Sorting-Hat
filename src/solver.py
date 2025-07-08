@@ -12,20 +12,19 @@ def run_shift_solver(volunteers, shift_ids, shifts_df, prefs_input,
     SCALE = 10
     points_d = dict(zip(shifts_df['ShiftID'].astype(str), shifts_df['Points']))
 
-    def get_rank(v, s):
-    if isinstance(prefs_input, pd.DataFrame):
-        if s in prefs_input.columns:
-            val = prefs_input.at[v, s]
-            if pd.isna(val):
+    def get_rank(v, s, prefs_input):
+        if isinstance(prefs_input, pd.DataFrame):
+            if (v in prefs_input.index) and (s in prefs_input.columns):
+                val = prefs_input.at[v, s]
+                if pd.isna(val):
+                    return float('inf')
+                try:
+                    return int(val)
+                except (ValueError, TypeError):
+                    return float('inf')
+            else:
                 return float('inf')
-            try:
-                return int(val)
-            except (ValueError, TypeError):
-                return float('inf')
-        else:
-            return float('inf')
-    return float('inf')
-
+        return float('inf')
 
     m2 = cp_model.CpModel()
     x = {(v, s): m2.NewBoolVar(f'x_{v}_{s}') for v in volunteers for s in shift_ids}
